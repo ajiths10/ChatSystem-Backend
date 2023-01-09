@@ -12,11 +12,11 @@ exports.regiserUser = async (req, res, next) => {
   let response_one = await SqlRunner(select_querry);
 
   if (response_one && response_one.length) {
-    return res.json({ message: "Email already exist" });
+    return res.json({ message: "Email already exist", status: 0 });
   } else {
     let hash = await encryptPassword(user.password);
     let response = await SqlRunner(input_querry, [user.name, user.email, hash]);
   }
 
-  res.json({ message: "Success" });
+  res.json({ message: "User Registered", status: 1 });
 };
