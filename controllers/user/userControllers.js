@@ -1,7 +1,11 @@
 const SqlRunner = require("../../common/SqlRunner");
-const db_con = require("../../common/SqlConnection");
 const Secure = require("../../common/crypto");
-const { encryptPassword, decryptPassword } = Secure;
+const {
+  encryptPassword,
+  decryptPassword,
+  GenerateJWTToken,
+  GenerateSecretKey,
+} = Secure;
 
 exports.regiserUser = async (req, res, next) => {
   let user = req.body;
@@ -33,8 +37,15 @@ exports.loginUser = async (req, res, next) => {
         user.password,
         response_one[0].password
       );
+
       if (passwordCheker) {
-        return res.json({ message: "Successfully logedin", status: 1 });
+        // let token_key = await GenerateSecretKey();
+        let token = await GenerateJWTToken(response_one[0].id);
+        return res.json({
+          message: "Successfully logedin",
+          status: 1,
+          token: token,
+        });
       } else {
         return res.json({ message: "Invalid Password", status: 0 });
       }
