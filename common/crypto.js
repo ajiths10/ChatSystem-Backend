@@ -13,3 +13,16 @@ exports.encryptPassword = (password) => {
     });
   });
 };
+
+exports.decryptPassword = (password, hash) => {
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(password, hash, function (err, result) {
+      // result == true
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+};
