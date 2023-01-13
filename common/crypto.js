@@ -30,6 +30,15 @@ exports.decryptPassword = (password, hash) => {
   });
 };
 
+//Generate Token Secret Keys
+exports.GenerateSecretKey = (id) => {
+  return new Promise((resolve, reject) => {
+    let secret_key = require("crypto").randomBytes(64).toString("hex");
+    console.log("key==> ", secret_key);
+    resolve(secret_key);
+  });
+};
+
 //Generate JWT Token for use Authentication
 exports.GenerateJWTToken = (id) => {
   return new Promise((resolve, reject) => {
@@ -40,11 +49,14 @@ exports.GenerateJWTToken = (id) => {
   });
 };
 
-//Generate Token Secret Keys
-exports.GenerateSecretKey = (id) => {
+//Generate JWT Token for use Authentication
+exports.VerifyJWTToken = (token) => {
   return new Promise((resolve, reject) => {
-    let secret_key = require("crypto").randomBytes(64).toString("hex");
-    console.log("key==> ", secret_key);
-    resolve(secret_key);
+    if (token == null) return reject();
+
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+      if (err) return reject();
+      resolve(user);
+    });
   });
 };
