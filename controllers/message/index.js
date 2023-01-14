@@ -9,5 +9,10 @@ router.post(
   CommonMiddleware.Authentication,
   MessageController.sendMessage
 );
+router.post(
+  "/usermessage",
+  CommonMiddleware.Authentication,
+  MessageController.userMessage
+);
 
 module.exports = router;
