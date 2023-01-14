@@ -75,11 +75,31 @@ exports.verifyUser = async (req, res, next) => {
     let tokenId = await VerifyJWTToken(user.userId);
     const select_querry = `SELECT * FROM users WHERE id = '${tokenId.id}' ;`;
     let response_one = await SqlRunner(select_querry);
-
     if (response_one && response_one[0].id) {
-      res.json({ message: "User Verified", status: 1 });
+      let data = {
+        name: response_one[0].name,
+        email: response_one[0].email,
+        id: response_one[0].id,
+      };
+      res.json({ message: "User Verified", status: 1, data: data });
     } else {
       res.json({ message: "Something went wrong ", status: 0 });
+    }
+  } catch (err) {
+    res.json({ message: "Soemthing went wrong", status: 0, error: err });
+  }
+};
+
+exports.getAllUsers = async (req, res, next) => {
+  let body = req.body;
+  try {
+    const select_querry = `SELECT * FROM users WHERE id != ${req.user.id};`;
+    let response_one = await SqlRunner(select_querry);
+
+    if (response_one) {
+      res.json({ message: "Users fetched", status: 1, data: response_one });
+    } else {
+      throw new Error("response not found!!");
     }
   } catch (err) {
     res.json({ message: "Soemthing went wrong", status: 0, error: err });
