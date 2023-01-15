@@ -34,7 +34,7 @@ exports.decryptPassword = (password, hash) => {
 exports.GenerateSecretKey = (id) => {
   return new Promise((resolve, reject) => {
     let secret_key = require("crypto").randomBytes(64).toString("hex");
-    console.log("key==> ", secret_key);
+    // console.log("key==> ", secret_key);
     resolve(secret_key);
   });
 };

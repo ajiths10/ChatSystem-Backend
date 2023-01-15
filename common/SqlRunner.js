@@ -4,6 +4,7 @@ const SqlRunner = async (querry, data) => {
   return new Promise((resolve, reject) => {
     db_con.query(querry, data, (err, result, fields) => {
       if (err) {
+        console.log(err);
         reject(err);
       } else {
         resolve(result);
