@@ -24,21 +24,3 @@ exports.Authentication = async (req, res, next) => {
     res.json({ message: "Soemthing went wrong", status: 0, error: error });
   }
 };
-
-exports.getAllUsermessages = (userId, recipientId) => {
-  const querry_one = `SELECT messages.id, messages.message, messages.created_at, users.id AS userid, users.email, users.name
-  FROM messages
-  INNER JOIN users
-  ON messages.to_userid = users.id 
-  WHERE (messages.to_userid = ${recipientId} AND messages.from_userid = ${userId}) OR messages.to_userid = ${userId} AND messages.from_userid = ${recipientId}
-  ORDER BY messages.id ASC;`;
-
-  return new Promise(async (resolve, reject) => {
-    try {
-      let response = await SqlRunner(querry_one);
-      resolve(response);
-    } catch (error) {
-      reject(error);
-    }
-  });
-};

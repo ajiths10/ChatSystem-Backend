@@ -43,7 +43,7 @@ exports.GenerateSecretKey = (id) => {
 exports.GenerateJWTToken = (id) => {
   return new Promise((resolve, reject) => {
     let token = jwt.sign({ id: id }, process.env.TOKEN_SECRET, {
-      expiresIn: "3600s",
+      expiresIn: "93600s",
     });
     resolve(token);
   });

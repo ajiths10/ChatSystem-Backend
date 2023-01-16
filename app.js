@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 io.on("connection", (socket) => {
-  console.log(`User Connected : ${socket.id}`);
+  // console.log(`User Connected : ${socket.id}`);
 });
 
 app.use(router);
