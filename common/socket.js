@@ -37,13 +37,14 @@ io.on("connection", (socket) => {
   });
 
   socket.on("ACKNOWLEDGEMENT", async (data) => {
-    console.log("data==> ", data);
     await updateUsermessages(data.key);
     let response = await getAllUsermessages("", "", data.limit, data.key);
+
     let response_object = {
       response: response,
       key: data.key,
     };
+
     socket.to(data.key).emit("RECEIVE_MESSAGE", response_object);
   });
 });

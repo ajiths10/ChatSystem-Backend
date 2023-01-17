@@ -9,7 +9,7 @@ exports.getAllUsermessages = (userId, recipientId, limit, common_key) => {
     FROM messages
     INNER JOIN users
     ON messages.to_userid = users.id 
-    WHERE messages.common_key = ${common_key}
+    WHERE messages.common_key = '${common_key}'
     ORDER BY messages.id DESC LIMIT ${limit};`;
   } else {
     querry_one = `SELECT messages.id, messages.message, messages.status, messages.created_at, users.id AS userid, users.email, users.name
@@ -31,7 +31,7 @@ exports.getAllUsermessages = (userId, recipientId, limit, common_key) => {
 };
 
 exports.updateUsermessages = (key) => {
-  const querry_one = `UPDATE messages SET status = 'delivered' WHERE  common_key = ${key}`;
+  const querry_one = `UPDATE messages SET status = 'delivered' WHERE messages.common_key = '${key}'`;
 
   return new Promise(async (resolve, reject) => {
     try {
