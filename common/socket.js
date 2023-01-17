@@ -38,14 +38,16 @@ io.on("connection", (socket) => {
 
   socket.on("ACKNOWLEDGEMENT", async (data) => {
     await updateUsermessages(data.key);
-    let response = await getAllUsermessages("", "", data.limit, data.key);
+    let newResponse = await getAllUsermessages("", "", data.limit, data.key);
 
-    let response_object = {
-      response: response,
+    let newResponseObj = {
+      newData: newResponse,
       key: data.key,
+      message: "hello world",
     };
 
-    socket.to(data.key).emit("RECEIVE_MESSAGE", response_object);
+    console.log("==>", newResponseObj);
+    socket.to(data.key).emit("ACKNOWLEDGEMENT_RESPONSE", newResponseObj);
   });
 });
 
