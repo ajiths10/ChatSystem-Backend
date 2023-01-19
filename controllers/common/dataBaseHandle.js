@@ -8,14 +8,14 @@ exports.getAllUsermessages = (userId, recipientId, limit, common_key) => {
     querry_one = `SELECT messages.id, messages.message, messages.status, messages.created_at, users.id AS userid, users.email, users.name
     FROM messages
     INNER JOIN users
-    ON messages.to_userid = users.id 
+    ON messages.from_userid = users.id 
     WHERE messages.common_key = '${common_key}'
     ORDER BY messages.id DESC LIMIT ${limit};`;
   } else {
     querry_one = `SELECT messages.id, messages.message, messages.status, messages.created_at, users.id AS userid, users.email, users.name
     FROM messages
     INNER JOIN users
-    ON messages.to_userid = users.id 
+    ON messages.from_userid = users.id 
     WHERE (messages.to_userid = ${recipientId} AND messages.from_userid = ${userId}) OR messages.to_userid = ${userId} AND messages.from_userid = ${recipientId}
     ORDER BY messages.id DESC LIMIT ${limit};`;
   }
