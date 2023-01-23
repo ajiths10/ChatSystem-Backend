@@ -9,5 +9,10 @@ router.post(
   CommonMiddleware.Authentication,
   GroupContoller.addNewGroup
 );
+router.post(
+  "/usergroup",
+  CommonMiddleware.Authentication,
+  GroupContoller.getUserGroup
+);
 
 module.exports = router;
