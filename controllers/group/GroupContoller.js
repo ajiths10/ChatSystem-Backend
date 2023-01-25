@@ -2,6 +2,7 @@ const SqlRunner = require("../../common/SqlRunner");
 const moment = require("moment");
 const Secure = require("../../common/crypto");
 const { GenerateSecretKey } = Secure;
+const { groupUserChecker } = require("../common/dataBaseHandle");
 
 exports.addNewGroup = async (req, res) => {
   let body = req.body;
@@ -37,6 +38,32 @@ exports.getUserGroup = async (req, res) => {
     const sql_querry = `SELECT * FROM groups WHERE users LIKE '%${user.id}%';`;
     let response_one = await SqlRunner(sql_querry);
     res.json({ message: "Data Fetchted", status: 1, data: response_one });
+  } catch (error) {
+    console.log(error);
+    res.json({ message: "Soemthing went wrong", status: 0, error: error });
+  }
+};
+
+exports.groupmessage = async (req, res) => {
+  let user = req.user;
+  let body = req.body;
+  const querry_one = `SELECT * FROM group_message WHERE to_groupid = '${body.recipientId}'
+  ORDER BY id DESC LIMIT ${body.limit};`;
+
+  try {
+    console.log("data==>", body);
+    let checker = await groupUserChecker(user.id, body.recipientId);
+    if (checker.status) {
+      let response_one = await SqlRunner(querry_one);
+      res.json({
+        message: "Data Fetchted",
+        status: 1,
+        data: response_one,
+        userData: checker.data,
+      });
+    } else {
+      new Error("Unautherized user");
+    }
   } catch (error) {
     console.log(error);
     res.json({ message: "Soemthing went wrong", status: 0, error: error });
