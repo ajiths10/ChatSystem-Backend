@@ -8,17 +8,32 @@ const { getAllUsermessages } = require("../common/dataBaseHandle");
 exports.sendMessage = async (req, res) => {
   let body = req.body;
   let user = req.user;
+
   const querry_one = `SELECT * FROM user_message WHERE (user_one = ${body.recipientId} AND user_two =  ${user.id}) OR (user_one = ${user.id} AND user_two =  ${body.recipientId} )`;
-  const input_querry = `INSERT INTO messages (from_userid, to_userid, message, common_key,status, created_at) VALUES (?, ?,?, ?, ?, ?);`;
+  const input_querry = `INSERT INTO messages (from_userid, to_userid, message, common_key,status, created_at) VALUES (?, ?, ?, ?, ?, ?);`;
+  console.log("==>", body);
+  const input_querry_group = `INSERT INTO group_message (from_userid, to_groupid, message, common_key,status, created_at) VALUES (?, ?,?, ?, ?, ?);`;
+
   try {
     let current_dateTime = moment().format("YYYY-MM-DD hh:mm:ss ");
-    let user_select = await SqlRunner(querry_one);
-    if (user_select) {
-      await SqlRunner(input_querry, [
+    if (body.type === "user") {
+      let user_select = await SqlRunner(querry_one);
+      if (user_select) {
+        await SqlRunner(input_querry, [
+          user.id,
+          body.recipientId,
+          body.message,
+          user_select[0].common_key,
+          "sent",
+          current_dateTime,
+        ]);
+      }
+    } else if (body.type === "group") {
+      await SqlRunner(input_querry_group, [
         user.id,
         body.recipientId,
         body.message,
-        user_select[0].common_key,
+        body.commonUserKey,
         "sent",
         current_dateTime,
       ]);
