@@ -47,8 +47,15 @@ exports.getUserGroup = async (req, res) => {
 exports.groupmessage = async (req, res) => {
   let user = req.user;
   let body = req.body;
-  const querry_one = `SELECT * FROM group_message WHERE to_groupid = '${body.recipientId}'
-  ORDER BY id DESC LIMIT ${body.limit};`;
+  // const querry_one = `SELECT * FROM group_message WHERE to_groupid = '${body.recipientId}'
+  // ORDER BY id DESC LIMIT ${body.limit};`;
+
+  let querry_one = `SELECT group_message.id, group_message.message, group_message.status, group_message.created_at, group_message.to_groupid, group_message.from_userid, group_message.common_key, users.id AS userid, users.email, users.name
+  FROM group_message
+  INNER JOIN users
+  ON group_message.from_userid = users.id 
+  WHERE group_message.to_groupid = '${body.recipientId}'
+  ORDER BY group_message.id DESC LIMIT ${body.limit};`;
 
   try {
     console.log("data==>", body);
@@ -58,7 +65,7 @@ exports.groupmessage = async (req, res) => {
       res.json({
         message: "Data Fetchted",
         status: 1,
-        data: response_one,
+        data: response_one.reverse(),
         userData: checker.data,
       });
     } else {
