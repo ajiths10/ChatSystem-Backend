@@ -2,7 +2,10 @@ const SqlRunner = require("../../common/SqlRunner");
 const moment = require("moment");
 const Secure = require("../../common/crypto");
 const { GenerateSecretKey } = Secure;
-const { groupUserChecker } = require("../common/dataBaseHandle");
+const {
+  groupUserChecker,
+  getUserGroupMessages,
+} = require("../common/dataBaseHandle");
 
 exports.addNewGroup = async (req, res) => {
   let body = req.body;
@@ -47,21 +50,14 @@ exports.getUserGroup = async (req, res) => {
 exports.groupmessage = async (req, res) => {
   let user = req.user;
   let body = req.body;
-  // const querry_one = `SELECT * FROM group_message WHERE to_groupid = '${body.recipientId}'
-  // ORDER BY id DESC LIMIT ${body.limit};`;
-
-  let querry_one = `SELECT group_message.id, group_message.message, group_message.status, group_message.created_at, group_message.to_groupid, group_message.from_userid, group_message.common_key, users.id AS userid, users.email, users.name
-  FROM group_message
-  INNER JOIN users
-  ON group_message.from_userid = users.id 
-  WHERE group_message.to_groupid = '${body.recipientId}'
-  ORDER BY group_message.id DESC LIMIT ${body.limit};`;
 
   try {
-    console.log("data==>", body);
     let checker = await groupUserChecker(user.id, body.recipientId);
     if (checker.status) {
-      let response_one = await SqlRunner(querry_one);
+      let response_one = await getUserGroupMessages(
+        body.recipientId,
+        body.limit
+      );
       res.json({
         message: "Data Fetchted",
         status: 1,

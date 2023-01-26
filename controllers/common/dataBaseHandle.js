@@ -64,3 +64,34 @@ exports.groupUserChecker = (userId, groupId) => {
     }
   });
 };
+
+exports.getUserGroupMessages = (groupId, limit) => {
+  let querry_one = `SELECT group_message.id, group_message.message, group_message.status, group_message.created_at, group_message.to_groupid, group_message.from_userid, group_message.common_key, users.id AS userid, users.email, users.name
+  FROM group_message
+  INNER JOIN users
+  ON group_message.from_userid = users.id 
+  WHERE group_message.to_groupid = '${groupId}'
+  ORDER BY group_message.id DESC LIMIT ${limit};`;
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      let response = await SqlRunner(querry_one);
+      resolve(response);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+exports.updateGroupmessages = (key) => {
+  const querry_one = `UPDATE group_message SET status = 'delivered' WHERE common_key = '${key}'`;
+
+  return new Promise(async (resolve, reject) => {
+    try {
+      let response = await SqlRunner(querry_one);
+      resolve(response);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
