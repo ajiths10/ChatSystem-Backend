@@ -2,10 +2,8 @@ const SqlRunner = require("../../common/SqlRunner");
 const moment = require("moment");
 const Secure = require("../../common/crypto");
 const { GenerateSecretKey } = Secure;
-const {
-  groupUserChecker,
-  getUserGroupMessages,
-} = require("../common/dataBaseHandle");
+const { getUserGroupMessages } = require("../common/dataBaseHandle");
+const { groupUserChecker, groupAdminChecker } = require("../common");
 
 exports.addNewGroup = async (req, res) => {
   let body = req.body;
@@ -15,11 +13,17 @@ exports.addNewGroup = async (req, res) => {
     let current_dateTime = moment().format("YYYY-MM-DD hh:mm:ss ");
     let key_generate = await GenerateSecretKey();
     let userIds = [user.id, ...body.userids];
-    const input_querry = `INSERT INTO groups (name, created_user, users, common_key, created_at) VALUES (?, ?, ?, ?, ?);`;
-    let response_one = await SqlRunner(input_querry, [
+    let admins = [user.id, ...body.admins];
+    const input_querry = `INSERT INTO groups (name, created_user, users, admins, common_key, created_at) VALUES (?, ?, ?, ?, ?, ?);`;
+    await SqlRunner(input_querry, [
       body.name,
       user.id,
       userIds
+        .sort(function (a, b) {
+          return a - b;
+        })
+        .toString(),
+      admins
         .sort(function (a, b) {
           return a - b;
         })
@@ -61,11 +65,34 @@ exports.groupmessage = async (req, res) => {
       res.json({
         message: "Data Fetchted",
         status: 1,
-        data: response_one.reverse(),
+        data: response_one ? response_one.reverse() : [],
         userData: checker.data,
       });
     } else {
       new Error("Unautherized user");
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ message: "Soemthing went wrong", status: 0, error: error });
+  }
+};
+
+exports.getSingleGroup = async (req, res) => {
+  let user = req.user;
+  let body = req.body;
+  const querry = `SELECT * FROM groups WHERE id = ${body.id}`;
+
+  try {
+    let checker = await groupAdminChecker(user.id, body.id);
+    if (checker.status) {
+      let response = await SqlRunner(querry);
+      res.json({
+        message: "Data Fetchted",
+        status: 1,
+        data: response,
+      });
+    } else {
+      throw new Error("Unautherized user");
     }
   } catch (error) {
     console.log(error);

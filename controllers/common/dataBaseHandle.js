@@ -23,7 +23,7 @@ exports.getAllUsermessages = (userId, recipientId, limit, common_key) => {
   return new Promise(async (resolve, reject) => {
     try {
       let response = await SqlRunner(querry_one);
-      resolve(response.reverse());
+      resolve(response ? response.reverse() : []);
     } catch (error) {
       reject(error);
     }
@@ -37,28 +37,6 @@ exports.updateUsermessages = (key) => {
     try {
       let response = await SqlRunner(querry_one);
       resolve(response);
-    } catch (error) {
-      reject(error);
-    }
-  });
-};
-
-exports.groupUserChecker = (userId, groupId) => {
-  const querry_one = `SELECT * FROM groups WHERE id = ${groupId}`;
-
-  return new Promise(async (resolve, reject) => {
-    try {
-      let response = await SqlRunner(querry_one);
-
-      if (response && response[0]) {
-        if (response[0].users.split(",").includes(userId.toString())) {
-          resolve({ status: true, data: response[0] });
-        } else {
-          resolve({ status: false, data: [] });
-        }
-      } else {
-        resolve({ status: false, data: [] });
-      }
     } catch (error) {
       reject(error);
     }

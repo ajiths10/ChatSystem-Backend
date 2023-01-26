@@ -2,10 +2,10 @@ const { Server } = require("socket.io");
 const {
   getAllUsermessages,
   updateUsermessages,
-  groupUserChecker,
   getUserGroupMessages,
   updateGroupmessages,
 } = require("../controllers/common/dataBaseHandle");
+const { groupUserChecker } = require("../controllers/common");
 
 let io = new Server(global.server, {
   cors: {
@@ -59,8 +59,9 @@ io.on("connection", (socket) => {
     if (checker.status) {
       response = await getUserGroupMessages(data.recipientId, data.limit);
     }
+
     let response_object = {
-      data: response.reverse(),
+      data: response ? response.reverse() : [],
       userData: checker.data,
       key: data.commonUserKey,
       recipientId: data.recipientId,
@@ -82,7 +83,7 @@ io.on("connection", (socket) => {
     }
 
     let response_object = {
-      data: response.reverse(),
+      data: response ? response.reverse() : [],
       userData: checker.data,
       key: data.commonUserKey,
       recipientId: data.recipientId,

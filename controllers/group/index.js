@@ -19,5 +19,10 @@ router.post(
   CommonMiddleware.Authentication,
   GroupContoller.groupmessage
 );
+router.post(
+  "/getsinglegroup",
+  CommonMiddleware.Authentication,
+  GroupContoller.getSingleGroup
+);
 
 module.exports = router;
