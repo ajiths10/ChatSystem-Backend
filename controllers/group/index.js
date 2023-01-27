@@ -24,5 +24,10 @@ router.post(
   CommonMiddleware.Authentication,
   GroupContoller.getSingleGroup
 );
+router.post(
+  "/updategroup",
+  CommonMiddleware.Authentication,
+  GroupContoller.updateGroup
+);
 
 module.exports = router;

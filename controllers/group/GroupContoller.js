@@ -99,3 +99,37 @@ exports.getSingleGroup = async (req, res) => {
     res.json({ message: "Soemthing went wrong", status: 0, error: error });
   }
 };
+
+exports.updateGroup = async (req, res) => {
+  const user = req.user;
+  const body = req.body;
+  let querry = `UPDATE groups SET ? WHERE id = ?`;
+
+  try {
+    let checker = await groupAdminChecker(user.id, body.id);
+    if (checker.status) {
+      let current_dateTime = moment().format("YYYY-MM-DD hh:mm:ss ");
+      let userIds = [user.id, ...body.userids].toString();
+      let admins = [user.id, ...body.admins].toString();
+      let response = await SqlRunner(querry, [
+        {
+          name: body.name,
+          users: userIds,
+          admins: admins,
+          updated_at: current_dateTime,
+        },
+        body.id,
+      ]);
+      res.json({
+        message: "Group updated",
+        status: 1,
+        data: response,
+      });
+    } else {
+      throw new Error("Unautherized access");
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ message: "Soemthing went wrong", status: 0, error: error });
+  }
+};
