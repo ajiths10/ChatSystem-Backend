@@ -12,8 +12,9 @@ const moment = require("moment");
 exports.regiserUser = async (req, res, next) => {
   let user = req.body;
   try {
-    const input_querry = `INSERT INTO users (name, email, password) VALUES (?, ?, ?);`;
+    const input_querry = `INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, ?);`;
     const select_querry = `SELECT * FROM users WHERE email = '${user.email}' ;`;
+    let current_dateTime = moment().format("YYYY-MM-DD hh:mm:ss ");
 
     let response_one = await SqlRunner(select_querry);
 
@@ -21,10 +22,11 @@ exports.regiserUser = async (req, res, next) => {
       return res.json({ message: "Email already exist", status: 0 });
     } else {
       let hash = await encryptPassword(user.password);
-      let response = await SqlRunner(input_querry, [
+      await SqlRunner(input_querry, [
         user.name,
         user.email,
         hash,
+        current_dateTime,
       ]);
     }
     res.json({
@@ -40,6 +42,8 @@ exports.loginUser = async (req, res, next) => {
   let user = req.body;
   try {
     const select_querry = `SELECT * FROM users WHERE email = '${user.email}' ;`;
+    const update_querry = `UPDATE users SET ? WHERE id = ?`;
+    let current_dateTime = moment().format("YYYY-MM-DD hh:mm:ss ");
 
     if (user && user.email && user.password) {
       let response_one = await SqlRunner(select_querry);
@@ -53,6 +57,11 @@ exports.loginUser = async (req, res, next) => {
         if (passwordCheker) {
           // let token_key = await GenerateSecretKey();
           let token = await GenerateJWTToken(response_one[0].id);
+          await SqlRunner(update_querry, [
+            { last_login: current_dateTime },
+            response_one[0].id,
+          ]);
+
           return res.json({
             message: "Successfully logedin",
             status: 1,
