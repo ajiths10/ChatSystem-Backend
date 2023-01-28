@@ -12,5 +12,10 @@ router.post(
   CommonMiddleware.Authentication,
   UserController.getAllUsers
 );
+router.post(
+  "/update",
+  CommonMiddleware.Authentication,
+  UserController.updateUser
+);
 
 module.exports = router;

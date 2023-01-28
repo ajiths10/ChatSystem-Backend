@@ -7,6 +7,7 @@ const {
   GenerateSecretKey,
   VerifyJWTToken,
 } = Secure;
+const moment = require("moment");
 
 exports.regiserUser = async (req, res, next) => {
   let user = req.body;
@@ -76,12 +77,8 @@ exports.verifyUser = async (req, res, next) => {
     const select_querry = `SELECT * FROM users WHERE id = '${tokenId.id}' ;`;
     let response_one = await SqlRunner(select_querry);
     if (response_one && response_one[0].id) {
-      let data = {
-        name: response_one[0].name,
-        email: response_one[0].email,
-        id: response_one[0].id,
-      };
-      res.json({ message: "User Verified", status: 1, data: data });
+      delete response_one[0].password;
+      res.json({ message: "User Verified", status: 1, data: response_one[0] });
     } else {
       res.json({ message: "Something went wrong ", status: 0 });
     }
@@ -103,5 +100,27 @@ exports.getAllUsers = async (req, res, next) => {
     }
   } catch (err) {
     res.json({ message: "Soemthing went wrong", status: 0, error: err });
+  }
+};
+
+exports.updateUser = async (req, res, next) => {
+  let user = req.user;
+  let body = req.body;
+  try {
+    const querry = `UPDATE users SET ? WHERE id = ?`;
+    const select_querry = `SELECT * FROM users WHERE id = ? ;`;
+    let current_dateTime = moment().format("YYYY-MM-DD hh:mm:ss ");
+
+    await SqlRunner(querry, [
+      { name: body.name, avatar: body.avatar, updated_at: current_dateTime },
+      user.id,
+    ]);
+    let response = await SqlRunner(select_querry, [user.id]);
+
+    delete response[0].password;
+    res.json({ message: "Updated", status: 1, data: response[0] });
+  } catch (error) {
+    console.log(error);
+    res.json({ message: "Soemthing went wrong", status: 0, error: error });
   }
 };
