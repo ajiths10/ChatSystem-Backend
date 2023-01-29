@@ -10,4 +10,10 @@ router.post(
   paymentController.payment
 );
 
+router.post(
+  "/confirm",
+  CommonMiddleware.Authentication,
+  paymentController.confirm
+);
+
 module.exports = router;

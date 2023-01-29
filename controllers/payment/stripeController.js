@@ -54,3 +54,34 @@ exports.payment = async (req, res) => {
     res.json({ message: "Soemthing went wrong", status: 0, error: e.message });
   }
 };
+
+exports.confirm = async (req, res) => {
+  let user = req.user;
+  let body = req.body;
+  const querry = `SELECT * FROM payment_log WHERE user_id = ? AND token_key = ?`;
+  const querry_one = `UPDATE payment_log SET ? WHERE token_key = ?`;
+
+  try {
+    let checker = await SqlRunner(querry, [user.id, body.token]);
+    let current_dateTime = moment().format("YYYY-MM-DD hh:mm:ss ");
+    if (checker[0]) {
+      await SqlRunner(querry_one, [
+        { status: body.status, updated_at: current_dateTime },
+        body.token,
+      ]);
+      res.json({
+        message: "Payment updated",
+        status: 1,
+      });
+    } else {
+      throw new Error("User or token not found");
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({
+      message: "Soemthing went wrong",
+      status: 0,
+      error: error.message,
+    });
+  }
+};
