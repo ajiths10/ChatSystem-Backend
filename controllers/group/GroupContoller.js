@@ -117,6 +117,7 @@ exports.updateGroup = async (req, res) => {
           users: userIds,
           admins: admins,
           updated_at: current_dateTime,
+          avatar: body.avatar,
         },
         body.id,
       ]);
