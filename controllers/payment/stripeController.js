@@ -21,12 +21,16 @@ exports.payment = async (req, res) => {
       "initiated",
       current_dateTime,
       10,
-      "Buy me a coffee",
+      body.message,
     ]);
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
+      billing_details: {
+        name: user.name,
+        email: user.email,
+      },
       line_items: [
         {
           price_data: {
@@ -35,7 +39,7 @@ exports.payment = async (req, res) => {
               name: user.name,
               description: "Buy me a coffee",
             },
-            unit_amount: 100,
+            unit_amount: body.amount * 100,
           },
           quantity: 1,
         },
