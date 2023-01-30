@@ -27,10 +27,7 @@ exports.payment = async (req, res) => {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "payment",
-      billing_details: {
-        name: user.name,
-        email: user.email,
-      },
+
       line_items: [
         {
           price_data: {
