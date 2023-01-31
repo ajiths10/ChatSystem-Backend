@@ -12,9 +12,12 @@ CREATE TABLE `groups` (
   `id` int(11) NOT NULL,
   `name` tinytext DEFAULT NULL,
   `created_user` tinyint(4) DEFAULT NULL,
-  `users` tinytext DEFAULT NULL,
+  `users` text DEFAULT NULL,
+  `admins` tinytext DEFAULT NULL,
+  `avatar` text DEFAULT NULL,
   `common_key` text DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `group_message` (
@@ -22,7 +25,7 @@ CREATE TABLE `group_message` (
   `from_userid` tinyint(4) DEFAULT NULL,
   `to_groupid` tinyint(4) DEFAULT NULL,
   `message` text DEFAULT NULL,
-  `common_key` int(11) DEFAULT NULL,
+  `common_key` text DEFAULT NULL,
   `status` tinytext DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -37,11 +40,26 @@ CREATE TABLE `messages` (
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE `payment_log` (
+  `id` tinyint(4) NOT NULL,
+  `user_id` tinyint(4) DEFAULT NULL,
+  `token_key` text DEFAULT NULL,
+  `amount` tinyint(4) DEFAULT NULL,
+  `message` text DEFAULT NULL,
+  `status` tinytext DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 CREATE TABLE `users` (
   `id` tinyint(4) NOT NULL,
   `name` tinytext DEFAULT NULL,
   `email` text DEFAULT NULL,
-  `password` text DEFAULT NULL
+  `password` text DEFAULT NULL,
+  `avatar` text DEFAULT NULL,
+  `last_login` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE `user_message` (
@@ -62,6 +80,9 @@ ALTER TABLE `group_message`
 ALTER TABLE `messages`
   ADD PRIMARY KEY (`id`);
 
+ALTER TABLE `payment_log`
+  ADD PRIMARY KEY (`id`);
+
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
@@ -77,6 +98,9 @@ ALTER TABLE `group_message`
 
 ALTER TABLE `messages`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `payment_log`
+  MODIFY `id` tinyint(4) NOT NULL AUTO_INCREMENT;
 
 ALTER TABLE `users`
   MODIFY `id` tinyint(4) NOT NULL AUTO_INCREMENT;
